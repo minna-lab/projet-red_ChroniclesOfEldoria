@@ -6,18 +6,15 @@ import (
 	"os"
 )
 
-// ============================================================
-//  TÂCHE 6 : Menu principal
-// ============================================================
-
-func mainMenu(c *Character) {
-	reader := bufio.NewReader(os.Stdin)
+// menuPrincipal affiche le menu principal et gère la navigation
+func menuPrincipal(p *Personnage) {
+	lecteur := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("\n╔══════════════════════════════════════════╗")
 		fmt.Println("║    🏰 CHRONICLES OF ELDORIA 🏰           ║")
 		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Printf("║  Héros : %-10s | HP : %d/%d\n", c.Name, c.CurrentHP, c.MaxHP)
-		fmt.Printf("║  Or    : %d 🪙\n", c.Gold)
+		fmt.Printf("║  Héros : %-10s | HP : %d/%d\n", p.Nom, p.HPActuel, p.HPMax)
+		fmt.Printf("║  Or    : %d 🪙\n", p.Or)
 		fmt.Println("╠══════════════════════════════════════════╣")
 		fmt.Println("║  1. Afficher les informations            ║")
 		fmt.Println("║  2. Accéder à l'inventaire               ║")
@@ -28,26 +25,26 @@ func mainMenu(c *Character) {
 		fmt.Println("║  0. Quitter                              ║")
 		fmt.Println("╚══════════════════════════════════════════╝")
 
-		var choice int
+		var choix int
 		fmt.Print("➤ Votre choix : ")
-		fmt.Scan(&choice)
-		reader.ReadString('\n')
+		fmt.Scan(&choix)
+		lecteur.ReadString('\n')
 
-		switch choice {
+		switch choix {
 		case 1:
-			displayInfo(c)
+			afficherInfos(p)
 		case 2:
-			accessInventory(c)
+			accederInventaire(p)
 		case 3:
-			merchantMenu(c)
+			menuMarchand(p)
 		case 4:
-			blacksmithMenu(c)
+			menuForgeron(p)
 		case 5:
-			trainingFight(c)
+			combatEntrainement(p)
 		case 6:
-			whoAreThey()
+			quiSontIls()
 		case 0:
-			fmt.Println("\n⚔️  Les Chroniques d'Eldoria vous attendent, brave héros. À bientôt !")
+			fmt.Println("\n⚔️  Les Chroniques d'Eldoria vous attendent. À bientôt !")
 			return
 		default:
 			fmt.Println("❌ Choix invalide.")
@@ -55,17 +52,15 @@ func mainMenu(c *Character) {
 	}
 }
 
-// ============================================================
-//  TÂCHE 7 & 14 : Marchand
-// ============================================================
-
-type ShopItem struct {
-	Name  string
-	Price int
+// ObjetBoutique représente un objet vendu par le marchand
+type ObjetBoutique struct {
+	Nom   string
+	Prix  int
 	Emoji string
 }
 
-var shopItems = []ShopItem{
+// listeObjets contient tous les objets disponibles chez le marchand
+var listeObjets = []ObjetBoutique{
 	{"Potion de Vie", 3, "🧪"},
 	{"Potion de Poison", 6, "☠️"},
 	{"Livre de Sort : Boule de Feu", 25, "📖"},
@@ -76,83 +71,82 @@ var shopItems = []ShopItem{
 	{"Augmentation d'Inventaire", 30, "🎒"},
 }
 
-func merchantMenu(c *Character) {
-	reader := bufio.NewReader(os.Stdin)
+// menuMarchand affiche le menu du marchand et gère les achats
+func menuMarchand(p *Personnage) {
+	lecteur := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("\n╔══════════════════════════════════════════╗")
 		fmt.Println("║   🛒 MARCHAND D'ELDORIA                  ║")
 		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Printf("║  Votre bourse : %d 🪙\n", c.Gold)
+		fmt.Printf("║  Votre bourse : %d 🪙\n", p.Or)
 		fmt.Println("╠══════════════════════════════════════════╣")
-		for i, item := range shopItems {
-			fmt.Printf("║  %d. %s %-25s %d 🪙\n", i+1, item.Emoji, item.Name, item.Price)
+		for i, obj := range listeObjets {
+			fmt.Printf("║  %d. %s %-25s %d 🪙\n", i+1, obj.Emoji, obj.Nom, obj.Prix)
 		}
 		fmt.Println("╠══════════════════════════════════════════╣")
 		fmt.Println("║  0. Retour                               ║")
 		fmt.Println("╚══════════════════════════════════════════╝")
 
-		var choice int
+		var choix int
 		fmt.Print("➤ Votre choix : ")
-		fmt.Scan(&choice)
-		reader.ReadString('\n')
+		fmt.Scan(&choix)
+		lecteur.ReadString('\n')
 
-		if choice == 0 {
+		if choix == 0 {
 			return
 		}
-		if choice < 1 || choice > len(shopItems) {
+		if choix < 1 || choix > len(listeObjets) {
 			fmt.Println("❌ Choix invalide.")
 			continue
 		}
 
-		item := shopItems[choice-1]
-		if c.Gold < item.Price {
-			fmt.Printf("💸 Pas assez d'or ! Il vous faut %d 🪙 (vous avez %d 🪙).\n", item.Price, c.Gold)
+		obj := listeObjets[choix-1]
+		if p.Or < obj.Prix {
+			fmt.Printf("💸 Pas assez d'or ! Il vous faut %d 🪙 (vous avez %d 🪙).\n", obj.Prix, p.Or)
 			continue
 		}
-		if isInventoryFull(c) {
+		if inventairePlein(p) {
 			fmt.Println("🎒 Inventaire plein ! Faites de la place avant d'acheter.")
 			continue
 		}
-		c.Gold -= item.Price
-		c.Inventory = append(c.Inventory, item.Name)
-		fmt.Printf("✅ Vous achetez '%s' pour %d 🪙. Il vous reste %d 🪙.\n", item.Name, item.Price, c.Gold)
+		p.Or -= obj.Prix
+		p.Inventaire = append(p.Inventaire, obj.Nom)
+		fmt.Printf("✅ Vous achetez '%s' pour %d 🪙. Il vous reste %d 🪙.\n", obj.Nom, obj.Prix, p.Or)
 	}
 }
 
-// ============================================================
-//  TÂCHE 15-17 : Forgeron
-// ============================================================
-
-type Recipe struct {
-	Name         string
-	GoldCost     int
-	Materials    map[string]int
-	Emoji        string
+// Recette représente une recette de fabrication du forgeron
+type Recette struct {
+	Nom       string
+	CoutOr    int
+	Materiaux map[string]int
+	Emoji     string
 }
 
-var recipes = []Recipe{
+// listeRecettes contient toutes les recettes disponibles
+var listeRecettes = []Recette{
 	{
-		Name:     "Chapeau de l'Aventurier",
-		GoldCost: 5,
-		Materials: map[string]int{
+		Nom:    "Chapeau de l'Aventurier",
+		CoutOr: 5,
+		Materiaux: map[string]int{
 			"Plume de Corbeau": 1,
 			"Cuir de Sanglier": 1,
 		},
 		Emoji: "🪖",
 	},
 	{
-		Name:     "Tunique de l'Aventurier",
-		GoldCost: 5,
-		Materials: map[string]int{
+		Nom:    "Tunique de l'Aventurier",
+		CoutOr: 5,
+		Materiaux: map[string]int{
 			"Fourrure de Loup": 2,
 			"Peau de Troll":    1,
 		},
 		Emoji: "🧥",
 	},
 	{
-		Name:     "Bottes de l'Aventurier",
-		GoldCost: 5,
-		Materials: map[string]int{
+		Nom:    "Bottes de l'Aventurier",
+		CoutOr: 5,
+		Materiaux: map[string]int{
 			"Fourrure de Loup": 1,
 			"Cuir de Sanglier": 1,
 		},
@@ -160,134 +154,79 @@ var recipes = []Recipe{
 	},
 }
 
-func blacksmithMenu(c *Character) {
-	reader := bufio.NewReader(os.Stdin)
+// menuForgeron affiche le menu du forgeron
+func menuForgeron(p *Personnage) {
+	lecteur := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("\n╔══════════════════════════════════════════╗")
 		fmt.Println("║   🔨 FORGERON D'ELDORIA                  ║")
 		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Printf("║  Votre bourse : %d 🪙\n", c.Gold)
+		fmt.Printf("║  Votre bourse : %d 🪙\n", p.Or)
 		fmt.Println("╠══════════════════════════════════════════╣")
-		for i, r := range recipes {
-			fmt.Printf("║  %d. %s %s (coût : %d 🪙)\n", i+1, r.Emoji, r.Name, r.GoldCost)
-			for mat, qty := range r.Materials {
-				have := countItem(c, mat)
-				fmt.Printf("║     - %dx %s (vous avez : %d)\n", qty, mat, have)
+		for i, r := range listeRecettes {
+			fmt.Printf("║  %d. %s %s (coût : %d 🪙)\n", i+1, r.Emoji, r.Nom, r.CoutOr)
+			for mat, qte := range r.Materiaux {
+				possede := compterItem(p, mat)
+				fmt.Printf("║     - %dx %s (vous avez : %d)\n", qte, mat, possede)
 			}
 		}
 		fmt.Println("╠══════════════════════════════════════════╣")
 		fmt.Println("║  0. Retour                               ║")
 		fmt.Println("╚══════════════════════════════════════════╝")
 
-		var choice int
+		var choix int
 		fmt.Print("➤ Votre choix : ")
-		fmt.Scan(&choice)
-		reader.ReadString('\n')
+		fmt.Scan(&choix)
+		lecteur.ReadString('\n')
 
-		if choice == 0 {
+		if choix == 0 {
 			return
 		}
-		if choice < 1 || choice > len(recipes) {
+		if choix < 1 || choix > len(listeRecettes) {
 			fmt.Println("❌ Choix invalide.")
 			continue
 		}
-
-		r := recipes[choice-1]
-		craftItem(c, r)
+		fabriquer(p, listeRecettes[choix-1])
 	}
 }
 
-func craftItem(c *Character, r Recipe) {
-	// Vérifier l'or
-	if c.Gold < r.GoldCost {
-		fmt.Printf("💸 Pas assez d'or ! Il vous faut %d 🪙.\n", r.GoldCost)
+// fabriquer tente de fabriquer un équipement
+func fabriquer(p *Personnage, r Recette) {
+	if p.Or < r.CoutOr {
+		fmt.Printf("💸 Pas assez d'or ! Il vous faut %d 🪙.\n", r.CoutOr)
 		return
 	}
-	// Vérifier les matériaux
-	for mat, qty := range r.Materials {
-		if countItem(c, mat) < qty {
-			fmt.Printf("❌ Matériaux insuffisants : il vous faut %dx %s.\n", qty, mat)
+	for mat, qte := range r.Materiaux {
+		if compterItem(p, mat) < qte {
+			fmt.Printf("❌ Matériaux insuffisants : il vous faut %dx %s.\n", qte, mat)
 			return
 		}
 	}
-	// Vérifier la place
-	if isInventoryFull(c) {
+	if inventairePlein(p) {
 		fmt.Println("🎒 Inventaire plein ! Impossible de fabriquer cet objet.")
 		return
 	}
-	// Consommer les matériaux
-	for mat, qty := range r.Materials {
-		for i := 0; i < qty; i++ {
-			removeItemOnce(c, mat)
+	for mat, qte := range r.Materiaux {
+		for i := 0; i < qte; i++ {
+			retirerItemUneFois(p, mat)
 		}
 	}
-	c.Gold -= r.GoldCost
-	c.Inventory = append(c.Inventory, r.Name)
-	fmt.Printf("⚒️  Vous fabriquez '%s' ! (-5 🪙)\n", r.Name)
+	p.Or -= r.CoutOr
+	p.Inventaire = append(p.Inventaire, r.Nom)
+	fmt.Printf("⚒️  Vous fabriquez '%s' ! (-%d 🪙)\n", r.Nom, r.CoutOr)
 }
 
-// ============================================================
-//  TÂCHE 16-17 : Équiper un objet
-// ============================================================
-
-var equipBonuses = map[string]int{
-	"Chapeau de l'Aventurier": 10,
-	"Tunique de l'Aventurier": 25,
-	"Bottes de l'Aventurier":  15,
-}
-
-func equipItem(c *Character, item string, index int) {
-	bonus := equipBonuses[item]
-	var oldItem string
-
-	switch item {
-	case "Chapeau de l'Aventurier":
-		oldItem = c.Equip.Head
-		if oldItem != "" {
-			c.MaxHP -= equipBonuses[oldItem]
-			addInventory(c, oldItem)
-			fmt.Printf("🔄 Vous déséquipez '%s'.\n", oldItem)
-		}
-		c.Equip.Head = item
-	case "Tunique de l'Aventurier":
-		oldItem = c.Equip.Chest
-		if oldItem != "" {
-			c.MaxHP -= equipBonuses[oldItem]
-			addInventory(c, oldItem)
-			fmt.Printf("🔄 Vous déséquipez '%s'.\n", oldItem)
-		}
-		c.Equip.Chest = item
-	case "Bottes de l'Aventurier":
-		oldItem = c.Equip.Feet
-		if oldItem != "" {
-			c.MaxHP -= equipBonuses[oldItem]
-			addInventory(c, oldItem)
-			fmt.Printf("🔄 Vous déséquipez '%s'.\n", oldItem)
-		}
-		c.Equip.Feet = item
-	}
-
-	c.Inventory = removeInventory(c.Inventory, index)
-	c.MaxHP += bonus
-	fmt.Printf("✅ Vous équipez '%s' ! +%d HP max. (HP max : %d)\n", item, bonus, c.MaxHP)
-}
-
-// ============================================================
-//  MISSION 6 : Qui sont-ils ?
-// ============================================================
-
-func whoAreThey() {
+// quiSontIls révèle les artistes cachés dans les noms des tâches
+func quiSontIls() {
 	fmt.Println("\n╔══════════════════════════════════════════╗")
 	fmt.Println("║   🎵 QUI SONT-ILS ?                      ║")
 	fmt.Println("╠══════════════════════════════════════════╣")
 	fmt.Println("║  Partie 2 : ABBA                         ║")
-	fmt.Println("║  (Two for the Price of One,              ║")
-	fmt.Println("║   Money Money Money,                     ║")
+	fmt.Println("║  (Money Money Money,                     ║")
 	fmt.Println("║   Gimme! Gimme! Gimme!,                  ║")
 	fmt.Println("║   On and On and On)                      ║")
 	fmt.Println("╠══════════════════════════════════════════╣")
-	fmt.Println("║  Partie 3 : Daft Punk / films cultes     ║")
-	fmt.Println("║  (Fighter Squad, Ready Player One,       ║")
-	fmt.Println("║   A.I., Duel)                            ║")
+	fmt.Println("║  Partie 3 : Références cinéma            ║")
+	fmt.Println("║  (Ready Player One, A.I., Duel)          ║")
 	fmt.Println("╚══════════════════════════════════════════╝")
 }

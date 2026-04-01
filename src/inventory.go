@@ -8,194 +8,170 @@ import (
 	"time"
 )
 
-// ============================================================
-//  TÂCHE 3 : Affichage des informations du personnage
-// ============================================================
-
-func displayInfo(c *Character) {
+// afficherInfos affiche toutes les stats du héros
+func afficherInfos(p *Personnage) {
 	fmt.Println("\n╔══════════════════════════════════════════╗")
-	fmt.Printf("║  🏰 FICHE DE %s\n", strings.ToUpper(c.Name))
+	fmt.Printf("║  🏰 FICHE DE %s\n", strings.ToUpper(p.Nom))
 	fmt.Println("╠══════════════════════════════════════════╣")
-	fmt.Printf("║  Classe    : %s\n", c.Class)
-	fmt.Printf("║  Niveau    : %d  (XP: %d/%d)\n", c.Level, c.CurrentXP, c.MaxXP)
-	fmt.Printf("║  HP        : %d/%d\n", c.CurrentHP, c.MaxHP)
-	fmt.Printf("║  Mana      : %d/%d\n", c.CurrentMana, c.MaxMana)
-	fmt.Printf("║  Or        : %d 🪙\n", c.Gold)
+	fmt.Printf("║  Classe    : %s\n", p.Classe)
+	fmt.Printf("║  Niveau    : %d  (XP: %d/%d)\n", p.Niveau, p.XPActuel, p.XPMax)
+	fmt.Printf("║  HP        : %d/%d\n", p.HPActuel, p.HPMax)
+	fmt.Printf("║  Mana      : %d/%d\n", p.ManaActuel, p.ManaMax)
+	fmt.Printf("║  Or        : %d 🪙\n", p.Or)
 	fmt.Println("╠══════════════════════════════════════════╣")
 	fmt.Println("║  ÉQUIPEMENTS :")
-	head := c.Equip.Head
-	if head == "" {
-		head = "(aucun)"
+	tete := p.Equip.Tete
+	if tete == "" {
+		tete = "(aucun)"
 	}
-	chest := c.Equip.Chest
-	if chest == "" {
-		chest = "(aucun)"
+	torse := p.Equip.Torse
+	if torse == "" {
+		torse = "(aucun)"
 	}
-	feet := c.Equip.Feet
-	if feet == "" {
-		feet = "(aucun)"
+	pieds := p.Equip.Pieds
+	if pieds == "" {
+		pieds = "(aucun)"
 	}
-	fmt.Printf("║  🪖 Tête   : %s\n", head)
-	fmt.Printf("║  🧥 Torse  : %s\n", chest)
-	fmt.Printf("║  👢 Pieds  : %s\n", feet)
+	fmt.Printf("║  🪖 Tête   : %s\n", tete)
+	fmt.Printf("║  🧥 Torse  : %s\n", torse)
+	fmt.Printf("║  👢 Pieds  : %s\n", pieds)
 	fmt.Println("╠══════════════════════════════════════════╣")
 	fmt.Println("║  SORTS CONNUS :")
-	for _, s := range c.Skills {
+	for _, s := range p.Sorts {
 		fmt.Printf("║  ✨ %s\n", s)
 	}
 	fmt.Println("╚══════════════════════════════════════════╝")
 }
 
-// ============================================================
-//  TÂCHE 4 : Accès à l'inventaire
-// ============================================================
-
-func accessInventory(c *Character) {
-	reader := bufio.NewReader(os.Stdin)
+// accederInventaire affiche l'inventaire et permet d'utiliser un item
+func accederInventaire(p *Personnage) {
+	lecteur := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("\n╔══════════════════════════════════════╗")
 		fmt.Println("║         🎒 INVENTAIRE                ║")
 		fmt.Println("╠══════════════════════════════════════╣")
-		if len(c.Inventory) == 0 {
+		if len(p.Inventaire) == 0 {
 			fmt.Println("║  (inventaire vide)                   ║")
 		} else {
-			for i, item := range c.Inventory {
+			for i, item := range p.Inventaire {
 				fmt.Printf("║  %d. %s\n", i+1, item)
 			}
 		}
-		fmt.Printf("║  Place : %d/%d\n", len(c.Inventory), c.MaxInventory)
+		fmt.Printf("║  Place : %d/%d\n", len(p.Inventaire), p.InventaireMax)
 		fmt.Println("╠══════════════════════════════════════╣")
-		fmt.Println("║  Choisissez un item à utiliser       ║")
 		fmt.Println("║  0. Retour                           ║")
 		fmt.Println("╚══════════════════════════════════════╝")
 
-		var choice int
+		var choix int
 		fmt.Print("➤ Votre choix : ")
-		fmt.Scan(&choice)
-		reader.ReadString('\n')
+		fmt.Scan(&choix)
+		lecteur.ReadString('\n')
 
-		if choice == 0 {
+		if choix == 0 {
 			return
 		}
-		if choice < 1 || choice > len(c.Inventory) {
+		if choix < 1 || choix > len(p.Inventaire) {
 			fmt.Println("❌ Choix invalide.")
 			continue
 		}
-
-		item := c.Inventory[choice-1]
-		useItem(c, item, choice-1)
+		item := p.Inventaire[choix-1]
+		utiliserItem(p, item, choix-1)
 	}
 }
 
-// useItem utilise un item de l'inventaire selon son type
-func useItem(c *Character, item string, index int) {
+// utiliserItem redirige vers la bonne fonction selon l'item choisi
+func utiliserItem(p *Personnage, item string, index int) {
 	switch item {
 	case "Potion de Vie":
-		takePot(c, index)
+		utiliserPotionVie(p, index)
 	case "Potion de Poison":
-		poisonPot(c, index)
+		utiliserPotionPoison(p, index)
 	case "Livre de Sort : Boule de Feu":
-		spellBook(c, index)
+		apprendreSort(p, index)
 	case "Chapeau de l'Aventurier", "Tunique de l'Aventurier", "Bottes de l'Aventurier":
-		equipItem(c, item, index)
+		equiper(p, item, index)
 	case "Augmentation d'Inventaire":
-		upgradeInventorySlot(c, index)
+		agrandirInventaire(p, index)
 	default:
 		fmt.Printf("❌ '%s' ne peut pas être utilisé directement.\n", item)
 	}
 }
 
-// ============================================================
-//  TÂCHE 5 : Potion de vie
-// ============================================================
-
-func takePot(c *Character, index int) {
-	if c.CurrentHP >= c.MaxHP {
+// utiliserPotionVie soigne le joueur de 50 HP
+func utiliserPotionVie(p *Personnage, index int) {
+	if p.HPActuel >= p.HPMax {
 		fmt.Println("💚 Vos points de vie sont déjà au maximum !")
 		return
 	}
-	c.Inventory = removeInventory(c.Inventory, index)
-	c.CurrentHP += 50
-	if c.CurrentHP > c.MaxHP {
-		c.CurrentHP = c.MaxHP
+	p.Inventaire = retirerInventaire(p.Inventaire, index)
+	p.HPActuel += 50
+	if p.HPActuel > p.HPMax {
+		p.HPActuel = p.HPMax
 	}
-	fmt.Printf("🧪 Vous buvez une Potion de Vie ! HP : %d/%d\n", c.CurrentHP, c.MaxHP)
+	fmt.Printf("🧪 Vous buvez une Potion de Vie ! HP : %d/%d\n", p.HPActuel, p.HPMax)
 }
 
-// ============================================================
-//  TÂCHE 9 : Potion de poison
-// ============================================================
-
-func poisonPot(c *Character, index int) {
-	c.Inventory = removeInventory(c.Inventory, index)
+// utiliserPotionPoison inflige 10 dégâts par seconde pendant 3 secondes
+func utiliserPotionPoison(p *Personnage, index int) {
+	p.Inventaire = retirerInventaire(p.Inventaire, index)
 	fmt.Println("☠️  Vous avalez la Potion de Poison... Vous vous sentez mal !")
 	for i := 1; i <= 3; i++ {
 		time.Sleep(1 * time.Second)
-		c.CurrentHP -= 10
-		if c.CurrentHP < 0 {
-			c.CurrentHP = 0
+		p.HPActuel -= 10
+		if p.HPActuel < 0 {
+			p.HPActuel = 0
 		}
-		fmt.Printf("💀 Poison — Tour %d/3 : HP %d/%d\n", i, c.CurrentHP, c.MaxHP)
+		fmt.Printf("💀 Poison — Tour %d/3 : HP %d/%d\n", i, p.HPActuel, p.HPMax)
 	}
-	isDead(c)
+	estMort(p)
 }
 
-// ============================================================
-//  TÂCHE 8 : isDead
-// ============================================================
-
-func isDead(c *Character) {
-	if c.CurrentHP <= 0 {
+// estMort vérifie si le joueur est mort et le ressuscite à 50% si c'est le cas
+func estMort(p *Personnage) {
+	if p.HPActuel <= 0 {
 		fmt.Println("\n💀 Vous êtes mort... Mais les dieux d'Eldoria vous rappellent à la vie !")
-		c.CurrentHP = c.MaxHP / 2
-		fmt.Printf("❤️  Ressuscité avec %d HP.\n", c.CurrentHP)
+		p.HPActuel = p.HPMax / 2
+		fmt.Printf("❤️  Ressuscité avec %d HP.\n", p.HPActuel)
 	}
 }
 
-// ============================================================
-//  TÂCHE 10 : Livre de sort
-// ============================================================
-
-func spellBook(c *Character, index int) {
-	spell := "Boule de Feu"
-	for _, s := range c.Skills {
-		if s == spell {
-			fmt.Printf("📖 Vous connaissez déjà '%s' !\n", spell)
+// apprendreSort apprend "Boule de Feu" si le joueur ne le connaît pas déjà
+func apprendreSort(p *Personnage, index int) {
+	sort := "Boule de Feu"
+	for _, s := range p.Sorts {
+		if s == sort {
+			fmt.Printf("📖 Vous connaissez déjà '%s' !\n", sort)
 			return
 		}
 	}
-	c.Inventory = removeInventory(c.Inventory, index)
-	c.Skills = append(c.Skills, spell)
-	fmt.Printf("✨ Vous apprenez le sort '%s' !\n", spell)
+	p.Inventaire = retirerInventaire(p.Inventaire, index)
+	p.Sorts = append(p.Sorts, sort)
+	fmt.Printf("✨ Vous apprenez le sort '%s' !\n", sort)
 }
 
-// ============================================================
-//  TÂCHE 12 : Limite d'inventaire
-// ============================================================
-
-func isInventoryFull(c *Character) bool {
-	return len(c.Inventory) >= c.MaxInventory
+// inventairePlein vérifie si l'inventaire est plein
+func inventairePlein(p *Personnage) bool {
+	return len(p.Inventaire) >= p.InventaireMax
 }
 
-// ============================================================
-//  Helpers inventaire
-// ============================================================
-
-func addInventory(c *Character, item string) bool {
-	if isInventoryFull(c) {
+// ajouterInventaire ajoute un item si l'inventaire n'est pas plein
+func ajouterInventaire(p *Personnage, item string) bool {
+	if inventairePlein(p) {
 		fmt.Printf("🎒 Inventaire plein ! Impossible d'ajouter '%s'.\n", item)
 		return false
 	}
-	c.Inventory = append(c.Inventory, item)
+	p.Inventaire = append(p.Inventaire, item)
 	return true
 }
 
-func removeInventory(inventory []string, index int) []string {
-	return append(inventory[:index], inventory[index+1:]...)
+// retirerInventaire retire l'item à l'index donné
+func retirerInventaire(inventaire []string, index int) []string {
+	return append(inventaire[:index], inventaire[index+1:]...)
 }
 
-func hasItem(c *Character, item string) (int, bool) {
-	for i, v := range c.Inventory {
+// chercherItem cherche un item dans l'inventaire
+func chercherItem(p *Personnage, item string) (int, bool) {
+	for i, v := range p.Inventaire {
 		if v == item {
 			return i, true
 		}
@@ -203,36 +179,79 @@ func hasItem(c *Character, item string) (int, bool) {
 	return -1, false
 }
 
-func countItem(c *Character, item string) int {
-	count := 0
-	for _, v := range c.Inventory {
+// compterItem compte combien de fois un item apparaît dans l'inventaire
+func compterItem(p *Personnage, item string) int {
+	compteur := 0
+	for _, v := range p.Inventaire {
 		if v == item {
-			count++
+			compteur++
 		}
 	}
-	return count
+	return compteur
 }
 
-func removeItemOnce(c *Character, item string) bool {
-	idx, found := hasItem(c, item)
-	if !found {
+// retirerItemUneFois retire une seule occurrence d'un item
+func retirerItemUneFois(p *Personnage, item string) bool {
+	idx, trouve := chercherItem(p, item)
+	if !trouve {
 		return false
 	}
-	c.Inventory = removeInventory(c.Inventory, idx)
+	p.Inventaire = retirerInventaire(p.Inventaire, idx)
 	return true
 }
 
-// ============================================================
-//  TÂCHE 18 : Augmenter la capacité de l'inventaire
-// ============================================================
+// bonusEquipement contient les bonus HP de chaque équipement
+var bonusEquipement = map[string]int{
+	"Chapeau de l'Aventurier": 10,
+	"Tunique de l'Aventurier": 25,
+	"Bottes de l'Aventurier":  15,
+}
 
-func upgradeInventorySlot(c *Character, index int) {
-	if c.UpgradeCount >= 3 {
+// equiper équipe un objet depuis l'inventaire
+func equiper(p *Personnage, item string, index int) {
+	bonus := bonusEquipement[item]
+	var ancienItem string
+
+	switch item {
+	case "Chapeau de l'Aventurier":
+		ancienItem = p.Equip.Tete
+		if ancienItem != "" {
+			p.HPMax -= bonusEquipement[ancienItem]
+			ajouterInventaire(p, ancienItem)
+			fmt.Printf("🔄 Vous déséquipez '%s'.\n", ancienItem)
+		}
+		p.Equip.Tete = item
+	case "Tunique de l'Aventurier":
+		ancienItem = p.Equip.Torse
+		if ancienItem != "" {
+			p.HPMax -= bonusEquipement[ancienItem]
+			ajouterInventaire(p, ancienItem)
+			fmt.Printf("🔄 Vous déséquipez '%s'.\n", ancienItem)
+		}
+		p.Equip.Torse = item
+	case "Bottes de l'Aventurier":
+		ancienItem = p.Equip.Pieds
+		if ancienItem != "" {
+			p.HPMax -= bonusEquipement[ancienItem]
+			ajouterInventaire(p, ancienItem)
+			fmt.Printf("🔄 Vous déséquipez '%s'.\n", ancienItem)
+		}
+		p.Equip.Pieds = item
+	}
+
+	p.Inventaire = retirerInventaire(p.Inventaire, index)
+	p.HPMax += bonus
+	fmt.Printf("✅ Vous équipez '%s' ! +%d HP max. (HP max : %d)\n", item, bonus, p.HPMax)
+}
+
+// agrandirInventaire augmente la capacité de l'inventaire de +10
+func agrandirInventaire(p *Personnage, index int) {
+	if p.NbAgrandissements >= 3 {
 		fmt.Println("❌ Vous avez déjà agrandi votre inventaire au maximum (3 fois) !")
 		return
 	}
-	c.Inventory = removeInventory(c.Inventory, index)
-	c.MaxInventory += 10
-	c.UpgradeCount++
-	fmt.Printf("🎒 Inventaire agrandi ! Nouvelle capacité : %d (agrandissement %d/3)\n", c.MaxInventory, c.UpgradeCount)
+	p.Inventaire = retirerInventaire(p.Inventaire, index)
+	p.InventaireMax += 10
+	p.NbAgrandissements++
+	fmt.Printf("🎒 Inventaire agrandi ! Nouvelle capacité : %d (agrandissement %d/3)\n", p.InventaireMax, p.NbAgrandissements)
 }
