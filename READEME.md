@@ -71,4 +71,4 @@ projet-red_ChroniclesOfEldoria-MINNA/
 
 ## 🎯 Thème
 
-Univers **Fantasy Médiévale** — elfes, nains, gobelins, sorts magiques et forgerons dans le royaume d'Eldoria .
+Univers **Fantasy Médiévale** — elfes, nains, gobelins, sorts magiques et forgerons dans le royaume d'Eldoria.
