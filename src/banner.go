@@ -26,12 +26,12 @@ func afficherBanniere() {
 		` ██║░░╚═╝███████║██████╔╝██║░░██║██╔██╗██║██║██║░░╚═╝██║░░░░░█████╗░░╚█████╗░`,
 		` ╚█████╔╝██║░░██║██║░░██║╚█████╔╝██║░╚███║██║╚█████╔╝███████╗███████╗██████╔╝`,
 	} {
-		fmt.Println(POURPRE + l + RESET)
+		fmt.Println(ROUGE + l + RESET)
 		time.Sleep(90 * time.Millisecond)
 	}
 
 	fmt.Println()
-	ecrireLent(OR+"                        ─── of ───"+RESET, 25*time.Millisecond)
+	ecrireLent(JAUNE+"                        ─── of ───"+RESET, 25*time.Millisecond)
 	fmt.Println("\n")
 	for _, l := range []string{
 		`          ███████╗██╗░░░░░██████╗░░█████╗░██████╗░██╗░█████╗░`,
@@ -41,11 +41,11 @@ func afficherBanniere() {
 		`          ███████╗███████╗██████╔╝╚█████╔╝██║░░██║██║██║░░██║`,
 		`          ╚══════╝╚══════╝╚═════╝░░╚════╝░╚═╝░░╚═╝╚═╝╚═╝░░╚═╝`,
 	} {
-		fmt.Println(OR + l + RESET)
+		fmt.Println(JAUNE + l + RESET)
 		time.Sleep(90 * time.Millisecond)
 	}
 	fmt.Println()
-	ecrireLent(POURPRE+"     ·  ≪  ⚔  Magie · Combats · Aventure  ⚔  ≫  ·"+RESET, 15*time.Millisecond)
+	ecrireLent(ROUGE+"     ·  ≪  ⚔  Magie · Combats · Aventure  ⚔  ≫  ·"+RESET, 15*time.Millisecond)
 	fmt.Println("\n")
 	time.Sleep(300 * time.Millisecond)
 
@@ -56,34 +56,30 @@ func afficherBanniere() {
 		titre   string
 		texte   string
 	}{
-		{POURPRE, "I. L'ÂGE D'OR",
-			"  Pendant trois cents ans, Humains, Elfes et Nains\n  vécurent en paix grâce à l'Arcane Primordial,\n  gemme sacrée source de toute magie à Eldoria."},
+		{ROUGE, "I. L'ÂGE D'OR",
+			"  Il était une fois un royaume appelé Eldoria.\n  Le peuple travaillait ensemble, les champs étaient verts,\n  et la magie aidait chacun à vivre mieux."},
 		{ROUGE, "II. LA CHUTE",
-			"  Zarveth, le Dragon Corrupteur, brisa la gemme\n  en trois éclats. Sans elle, la magie s'effrite,\n  les récoltes meurent et les ténèbres avancent."},
-		{OR, "III. VOTRE DESTIN",
-			"  Une prophétie désigne un héros au sang ordinaire\n  pour réunir les éclats et terrasser le dragon.\n\n  Ce héros... c'est vous."},
+			"  Mais un jour, la pierre d'or qui protégeait le royaume\n  fut volée. Sans elle, les rivières se sont refroidies\n  et la peur a commencé."},
+		{JAUNE, "III. VOTRE DESTIN",
+			"  Votre mission est simple : retrouver trois fragments\n  de la pierre, rendre Eldoria lumineuse et ramener la paix.\n\n  Ce héros... c'est vous."},
 	}
 
 	for _, b := range blocs {
 		effacer()
 		ecrireLent(b.couleur+"  ✦  "+b.titre+"  ✦"+RESET, 20*time.Millisecond)
 		fmt.Println("\n")
-		ecrireLent(ARGENT+b.texte+RESET, 8*time.Millisecond)
+		ecrireLent(BLANC+b.texte+RESET, 8*time.Millisecond)
 		fmt.Println("\n")
-		ecrireLent(ARGENT+"  [ Entrée pour continuer ]"+RESET, 10*time.Millisecond)
+		ecrireLent(BLANC+"  [ Entrée pour continuer ]"+RESET, 10*time.Millisecond)
 		fmt.Println()
 		lecteur.ReadString('\n')
 	}
 
 	// Prompt final séparé
 	effacer()
-	ecrireLent(POURPRE+"  ┌──────────────────────────────────────────┐"+RESET, 8*time.Millisecond)
+	ecrireLent(JAUNE+"  Prêt à sauver Eldoria, héros ?"+RESET, 12*time.Millisecond)
 	fmt.Println()
-	ecrireLent(OR+"  │   ✦  Prêt à sauver Eldoria, héros ?  ✦   │"+RESET, 12*time.Millisecond)
-	fmt.Println()
-	ecrireLent(OR+"  │      Appuyez sur Entrée pour commencer    │"+RESET, 12*time.Millisecond)
-	fmt.Println()
-	ecrireLent(POURPRE+"  └──────────────────────────────────────────┘"+RESET, 8*time.Millisecond)
+	ecrireLent(JAUNE+"  Appuyez sur Entrée pour commencer"+RESET, 12*time.Millisecond)
 	fmt.Println("\n")
 	lecteur.ReadString('\n')
 }

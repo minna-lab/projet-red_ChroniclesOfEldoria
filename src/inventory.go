@@ -9,36 +9,39 @@ import (
 )
 
 func afficherInfos(p *Personnage) {
-	fmt.Println(POURPRE + "\nFICHE DE " + strings.ToUpper(p.Nom) + RESET)
-	fmt.Printf(CYAN_VIF+"Classe    : %s\n"+RESET, p.Classe)
-	fmt.Printf(CYAN_VIF+"Niveau    : %d  (XP: %d/%d)\n"+RESET, p.Niveau, p.XPActuel, p.XPMax)
-	fmt.Printf(ROUGE_VIF+"HP        : %d/%d\n"+RESET, p.HPActuel, p.HPMax)
-	fmt.Printf(BLEU_VIF+"Mana      : %d/%d\n"+RESET, p.ManaActuel, p.ManaMax)
-	fmt.Printf(OR+"Or        : %d pièces d'or\n"+RESET, p.Or)
-	fmt.Println(JAUNE_VIVE + "Sorts connus:" + RESET)
+	fmt.Println(ROUGE + "\nFICHE DE " + strings.ToUpper(p.Nom) + RESET)
+	fmt.Printf(BLEU+"Classe    : %s\n"+RESET, p.Classe)
+	fmt.Printf(BLEU+"Niveau    : %d  (XP: %d/%d)\n"+RESET, p.Niveau, p.XPActuel, p.XPMax)
+	fmt.Printf(ROUGE+"HP        : %d/%d\n"+RESET, p.HPActuel, p.HPMax)
+	fmt.Printf(BLEU+"Mana      : %d/%d\n"+RESET, p.ManaActuel, p.ManaMax)
+	fmt.Printf(JAUNE+"Or        : %d pièces d'or\n"+RESET, p.Or)
+	fmt.Println(JAUNE + "Sorts connus:" + RESET)
 	for _, s := range p.Sorts {
-		fmt.Printf(EMERAUDE+"║    → %s\n"+RESET, s)
+		fmt.Printf(VERT+"  → %s\n"+RESET, s)
 	}
-	fmt.Println(POURPRE + "╚══════════════════════════════════════════╝" + RESET)
 }
 
 func accederInventaire(p *Personnage) {
 	lecteur := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println(CYAN_VIF + "\nINVENTAIRE" + RESET)
+		fmt.Println(POURPRE + "\n╔══════════════════════════════════════╗")
+		fmt.Println(POURPRE + "║              INVENTAIRE              ║" + RESET)
+		fmt.Println(POURPRE + "╠══════════════════════════════════════╣" + RESET)
 		if len(p.Inventaire) == 0 {
-			fmt.Println(ARGENT + "(votre sac est vide, voyageur...)" + RESET)
+			fmt.Println(BLANC + "║  (votre sac est vide, voyageur...)   ║" + RESET)
 		} else {
 			for i, item := range p.Inventaire {
-				fmt.Printf(CYAN_VIF+"%d. "+BLANC+"%s\n"+RESET, i+1, item)
+				fmt.Printf(BLEU+"║  %d. "+BLANC+"%s\n"+RESET, i+1, item)
 			}
 		}
-		fmt.Printf(ARGENT+"Place : %d/%d\n"+RESET, len(p.Inventaire), p.InventaireMax)
-		fmt.Println(CYAN_VIF + "Choisissez un item à utiliser" + RESET)
-		fmt.Println(ARGENT + "0. 🚪 Retour au menu principal" + RESET)
+		fmt.Printf(BLANC+"║  Place : %d/%d\n"+RESET, len(p.Inventaire), p.InventaireMax)
+		fmt.Println(POURPRE + "╠══════════════════════════════════════╣" + RESET)
+		fmt.Println(POURPRE + "║  Choisissez un item à utiliser       ║" + RESET)
+		fmt.Println(BLANC + "║  0. 🚪 Retour au menu principal       ║" + RESET)
+		fmt.Println(POURPRE + "╚══════════════════════════════════════╝" + RESET)
 
 		var choix int
-		fmt.Print(EMERAUDE + "➤ Votre choix : " + RESET)
+		fmt.Print(VERT + "➤ Votre choix : " + RESET)
 		fmt.Scan(&choix)
 		lecteur.ReadString('\n')
 
@@ -71,7 +74,7 @@ func utiliserItem(p *Personnage, item string, index int) {
 
 func utiliserPotionVie(p *Personnage, index int) {
 	if p.HPActuel >= p.HPMax {
-		fmt.Println(VERT_VIF + "💚 Vos blessures sont déjà guéries, héros !" + RESET)
+		fmt.Println(VERT + "💚 Vos blessures sont déjà guéries, héros !" + RESET)
 		return
 	}
 	avant := p.HPActuel
@@ -80,7 +83,7 @@ func utiliserPotionVie(p *Personnage, index int) {
 	if p.HPActuel > p.HPMax {
 		p.HPActuel = p.HPMax
 	}
-	fmt.Printf(VERT_VIF+"🧪 Vous buvez une Potion de Vie ! HP : %d → %d/%d\n"+RESET, avant, p.HPActuel, p.HPMax)
+	fmt.Printf(VERT+"🧪 Vous buvez une Potion de Vie ! HP : %d → %d/%d\n"+RESET, avant, p.HPActuel, p.HPMax)
 }
 
 func utiliserPotionPoison(p *Personnage, index int) {
@@ -101,7 +104,7 @@ func estMort(p *Personnage) {
 	if p.HPActuel <= 0 {
 		fmt.Println(ROUGE + "\n💀 Vous tombez... Les dieux d'Eldoria refusent de vous laisser mourir !" + RESET)
 		p.HPActuel = p.HPMax / 2
-		fmt.Printf(VERT_VIF+"❤️  Ressuscité avec %d HP. Continuez à vous battre !\n"+RESET, p.HPActuel)
+		fmt.Printf(VERT+"❤️  Ressuscité avec %d HP. Continuez à vous battre !\n"+RESET, p.HPActuel)
 	}
 }
 
@@ -109,13 +112,13 @@ func apprendreSort(p *Personnage, index int) {
 	sort := "Boule de Feu"
 	for _, s := range p.Sorts {
 		if s == sort {
-			fmt.Printf(JAUNE_VIVE+"📖 Vous maîtrisez déjà le sort '%s' !\n"+RESET, sort)
+			fmt.Printf(JAUNE+"📖 Vous maîtrisez déjà le sort '%s' !\n"+RESET, sort)
 			return
 		}
 	}
 	p.Inventaire = retirerInventaire(p.Inventaire, index)
 	p.Sorts = append(p.Sorts, sort)
-	fmt.Printf(EMERAUDE+"✨ Les runes du livre brillent... Vous apprenez '%s' !\n"+RESET, sort)
+	fmt.Printf(VERT+"✨ Les runes du livre brillent... Vous apprenez '%s' !\n"+RESET, sort)
 }
 
 func inventairePlein(p *Personnage) bool {
@@ -171,5 +174,5 @@ func agrandirInventaire(p *Personnage, index int) {
 	p.Inventaire = retirerInventaire(p.Inventaire, index)
 	p.InventaireMax += 10
 	p.NbAgrandissements++
-	fmt.Printf(VERT_VIF+"🎒 Votre sac magique s'agrandit ! Capacité : %d (agrandissement %d/3)\n"+RESET, p.InventaireMax, p.NbAgrandissements)
+	fmt.Printf(VERT+"🎒 Votre sac magique s'agrandit ! Capacité : %d (agrandissement %d/3)\n"+RESET, p.InventaireMax, p.NbAgrandissements)
 }

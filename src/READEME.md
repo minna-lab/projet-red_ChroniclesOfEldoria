@@ -1,74 +1,116 @@
 # Chronicles of Eldoria ⚔️
+> Mini RPG en ligne de commande (CLI) développé en Go — Projet RED
 
-> Un RPG en ligne de commande (CLI) développé en Go — Projet RED
+---
 
-## 🏰 Présentation
+## 📖 Histoire
 
-**Chronicles of Eldoria** est un mini jeu de rôle en ligne de commande. Vous incarnez un héros (Humain, Elfe ou Nain) qui explore le royaume d'Eldoria, gère son inventaire, commerce avec des marchands, forge son équipement et affronte des monstres en combat tour par tour.
+Il y a trois cents ans, les peuples d'Eldoria — Humains, Elfes et Nains — vivaient en paix sous la protection de l'**Arcane Primordial**, gemme source de toute magie.
+
+Jusqu'au jour où **Zarveth, le Dragon Corrupteur**, brisa la gemme en trois éclats. Sans elle, la magie s'effrite, les récoltes meurent et les ténèbres avancent.
+
+Une prophétie désigne un héros au sang ordinaire pour réunir les éclats et terrasser le dragon.
+
+**Ce héros, c'est vous.**
+
+---
 
 ## 👥 Équipe
 
-| Membre | Rôle |
-|--------|------|
-| **Minna** (chef d'équipe) | Personnage, Inventaire, Économie (Tâches 1–15) |
-| **Mariam** | Équipements, Combat, Intégration (Tâches 16–22) |
+| Membre | Rôle | Tâches |
+|--------|------|--------|
+| **Minna** | Combat, Équipements, Missions | Tâches 16 à 22 + Missions |
+| **Mariam** | Personnage, Inventaire, Économie | Tâches 1 à 15 |
+
+---
 
 ## 🎮 Fonctionnalités
 
-- ✅ Création de personnage (Humain / Elfe / Nain)
-- ✅ Affichage des stats et équipements
-- ✅ Système d'inventaire avec limite (extensible)
-- ✅ Potions de vie et de poison
-- ✅ Système de sorts (Coup de Poing, Boule de Feu)
-- ✅ Marchand avec économie en pièces d'or
-- ✅ Forgeron avec système de crafting
-- ✅ Équipements avec bonus de HP
-- ✅ Combat tour par tour avec IA gobelin
-- ✅ Système d'expérience et montée de niveau
-- ✅ Système de mana
-- ✅ Initiative (qui attaque en premier)
+### Partie 1 — Personnage & Inventaire *(Mariam, tâches 1–15)*
+- Création de personnage interactive : choix du nom et de la race (Humain, Elfe, Nain)
+- Affichage de la fiche du héros (HP, Mana, XP, Or, sorts, équipements)
+- Système d'inventaire avec limite de places (extensible jusqu'à 3 fois)
+- Potion de Vie : restaure 50 HP
+- Potion de Poison : inflige 10 dégâts/seconde pendant 3 secondes
+- Livre de Sort : apprend Boule de Feu (un sort ne peut être appris qu'une seule fois)
+- Marchand d'Eldoria : achat d'items avec un système de pièces d'or
+- Augmentation d'inventaire : +10 places via le marchand (max 3 fois, 30 🪙)
 
-## 🚀 Installation & Lancement
+### Partie 2 — Équipements & Forgeron *(Minna, tâches 16–22)*
+- Structure Equipement avec 3 slots : Tête, Torse, Pieds
+- Forgeron d'Ironholt : fabrication d'équipements à partir de matériaux
+- Équiper un item modifie les HP max (Chapeau +10, Tunique +25, Bottes +15)
+- Si un slot est déjà occupé, l'ancien équipement revient dans la sacoche
 
-### Prérequis
-- [Go](https://go.dev/dl/) 1.22 ou supérieur
+### Partie 3 — Combat *(Minna, tâches 19–22)*
+- Combat tour par tour contre un Gobelin d'Entraînement
+- IA du gobelin : attaque normale chaque tour, attaque double tous les 3 tours
+- Actions du joueur : Attaque basique, Lancer un sort, Utiliser l'inventaire, Fuir
+- Système d'initiative : le combattant avec la plus haute initiative attaque en premier
 
-### Lancer le jeu
+### Missions bonus *(Minna)*
+- **Mission 1** — Initiative : détermine qui commence le combat
+- **Mission 2** — Expérience : gain d'XP après victoire, montée de niveau avec excès reporté
+- **Mission 3** — Sorts en combat : Coup de Poing (8 dmg) et Boule de Feu (18 dmg)
+- **Mission 4** — Mana : les sorts consomment du mana, usage impossible si insuffisant
+- **Mission 5** — Bannière animée : titre ASCII, histoire dynamique bloc par bloc
+- **Mission 6** — Easter egg : option "Qui sont-ils ?" dans le menu principal
+
+---
+
+## 🛒 Catalogue du Marchand
+
+| Item | Prix | Effet |
+|------|------|-------|
+| Potion de Vie | 3 🪙 | +50 HP |
+| Potion de Poison | 6 🪙 | −10 HP/s pendant 3s |
+| Livre de Sort : Boule de Feu | 25 🪙 | Apprend Boule de Feu |
+| Augmentation d'Inventaire | 30 🪙 | +10 emplacements |
+| Fourrure de Loup | 4 🪙 | Matériau de crafting |
+| Peau de Troll | 7 🪙 | Matériau de crafting |
+| Cuir de Sanglier | 3 🪙 | Matériau de crafting |
+| Plume de Corbeau | 1 🪙 | Matériau de crafting |
+
+---
+
+## 🚀 Lancement
+
+**Prérequis :** [Go 1.22+](https://go.dev/dl/)
 
 ```bash
-# Cloner le repo
+# Cloner le dépôt
 git clone https://github.com/votre-compte/projet-red_ChroniclesOfEldoria-MINNA.git
-cd projet-red_ChroniclesOfEldoria-MINNA
+cd projet-red_ChroniclesOfEldoria-MINNA/src
 
-# Lancer le jeu
-cd src
+# Lancer directement
 go run .
-```
 
-### Compiler et exécuter
-
-```bash
-cd src
+# Ou compiler puis exécuter
 go build -o eldoria
 ./eldoria
 ```
+
+---
 
 ## 🗂️ Structure du projet
 
 ```
 projet-red_ChroniclesOfEldoria-MINNA/
 ├── src/
-│   ├── main.go         # Point d'entrée
-│   ├── structs.go      # Structures Character, Monster, Equipment
-│   ├── character.go    # Création et initialisation du personnage
-│   ├── inventory.go    # Inventaire, potions, sorts, équipements
-│   ├── menus.go        # Menus principal, marchand, forgeron
-│   ├── combat.go       # Combat tour par tour, IA, XP, sorts
-│   ├── banner.go       # ASCII art du titre
-│   └── go.mod
+│   ├── main.go        # Point d'entrée
+│   ├── structs.go     # Structures : Personnage, Monstre, Equipement
+│   ├── couleurs.go    # Palette ANSI (6 couleurs thématiques)
+│   ├── banner.go      # ASCII art animé + histoire dynamique
+│   ├── character.go   # Création et initialisation du personnage
+│   ├── inventory.go   # Inventaire, potions, sorts, équipements
+│   ├── menus.go       # Menus : principal, marchand, forgeron
+│   └── combats.go     # Combat tour par tour, IA, XP, sorts
+├── go.mod
 └── README.md
 ```
 
+---
+
 ## 🎯 Thème
 
-Univers **Fantasy Médiévale** — elfes, nains, gobelins, sorts magiques et forgerons dans le royaume d'Eldoria.
+Univers **Fantasy Médiévale** — elfes, nains, dragons, sorts magiques et forgerons dans le royaume d'Eldoria.

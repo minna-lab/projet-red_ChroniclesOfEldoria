@@ -54,13 +54,13 @@ func estAlpha(s string) bool {
 func creationPersonnage() Personnage {
 	lecteur := bufio.NewReader(os.Stdin)
 
-	fmt.Println(POURPRE + "\nFORGER VOTRE DESTINÉE" + RESET)
-	fmt.Println(POURPRE + "\nLa Prophétie vous appelle. Qui êtes-vous ?" + RESET)
+	fmt.Println(ROUGE + "\nFORGER VOTRE DESTINÉE" + RESET)
+	fmt.Println(ROUGE + "\nLa Prophétie vous appelle. Qui êtes-vous ?" + RESET)
 
 	// Saisie du nom
 	var nom string
 	for {
-		fmt.Print(EMERAUDE + "\n  Votre nom (lettres uniquement) : " + RESET)
+		fmt.Print(VERT + "\n  Votre nom (lettres uniquement) : " + RESET)
 		saisie, _ := lecteur.ReadString('\n')
 		saisie = strings.TrimSpace(saisie)
 		if len(saisie) == 0 {
@@ -76,16 +76,16 @@ func creationPersonnage() Personnage {
 	}
 
 	// Choix de la race
-	fmt.Println(OR + "\n  Choisissez votre lignée :" + RESET)
-	fmt.Println(CYAN + "  1. Humain  (100 HP) — Né de la terre, forgé par la volonté" + RESET)
-	fmt.Println(EMERAUDE + "  2. Elfe    ( 80 HP) — Fils des forêts, maître des arcanes" + RESET)
-	fmt.Println(ARGENT + "  3. Nain    (120 HP) — Enfant des montagnes, résistance de pierre" + RESET)
+	fmt.Println(JAUNE + "\n  Choisissez votre lignée :" + RESET)
+	fmt.Println(BLEU + "  1. Humain  (100 HP) — Né de la terre, forgé par la volonté" + RESET)
+	fmt.Println(VERT + "  2. Elfe    ( 80 HP) — Fils des forêts, maître des arcanes" + RESET)
+	fmt.Println(BLANC + "  3. Nain    (120 HP) — Enfant des montagnes, résistance de pierre" + RESET)
 
 	var choixClasse int
 	var classe string
 	var hpMax int
 	for {
-		fmt.Print(EMERAUDE + "\n  Votre choix : " + RESET)
+		fmt.Print(VERT + "\n  Votre choix : " + RESET)
 		fmt.Scan(&choixClasse)
 		lecteur.ReadString('\n')
 		switch choixClasse {
@@ -105,8 +105,6 @@ func creationPersonnage() Personnage {
 	joueur := initialiserPersonnage(nom, classe, 1, hpMax, hpMax/2, []string{"Potion de Vie", "Potion de Vie", "Potion de Vie"})
 
 	fmt.Println()
-	fmt.Println(POURPRE + "  ════════════════════════════════════════" + RESET)
-	fmt.Printf(OR+GRAS+"  ✦ %s le %s, Eldoria a besoin de vous. ✦\n"+RESET, joueur.Nom, joueur.Classe)
-	fmt.Println(POURPRE + "  ════════════════════════════════════════" + RESET)
+	fmt.Printf(JAUNE+"  ✦ %s le %s, Eldoria a besoin de vous. ✦\n"+RESET, joueur.Nom, joueur.Classe)
 	return joueur
 }

@@ -9,16 +9,19 @@ import (
 func menuPrincipal(p *Personnage) {
 	lecteur := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println(POURPRE + "\nCHRONICLES OF ELDORIA")
-		fmt.Printf(OR+"Héros : %s | HP : %d/%d\n"+RESET, p.Nom, p.HPActuel, p.HPMax)
-		fmt.Printf(OR+"Or : %d pièces\n"+RESET, p.Or)
-		fmt.Println(POURPRE + "---" + RESET)
-		fmt.Println(OR + "1. 📜 Afficher les informations" + RESET)
-		fmt.Println(VERT + "2. 🎒 Accéder à l'inventaire" + RESET)
-		fmt.Println(BLANC + "3. 🛒 Marchand d'Eldoria" + RESET)
-		fmt.Println(OR + "4. ⚔️  Combat d'entraînement" + RESET)
-		fmt.Println(VERT + "5. 🎵 Qui sont-ils ?" + RESET)
-		fmt.Println(BLANC + "0. 🚪 Quitter" + RESET)
+		fmt.Println(POURPRE + "\n╔══════════════════════════════════════════╗")
+		fmt.Println(POURPRE + "║    🏰 CHRONICLES OF ELDORIA 🏰            ║")
+		fmt.Println(POURPRE + "╠══════════════════════════════════════════╣" + RESET)
+		fmt.Printf(JAUNE+"║  Héros : %s | HP : %d/%d\n"+RESET, p.Nom, p.HPActuel, p.HPMax)
+		fmt.Printf(JAUNE+"║  Or : %d pièces\n"+RESET, p.Or)
+		fmt.Println(POURPRE + "╠══════════════════════════════════════════╣" + RESET)
+		fmt.Println(JAUNE + "║  1. 📜 Afficher les informations         ║" + RESET)
+		fmt.Println(VERT + "║  2. 🎒 Accéder à l'inventaire            ║" + RESET)
+		fmt.Println(BLANC + "║  3. 🛒 Marchand d'Eldoria                ║" + RESET)
+		fmt.Println(JAUNE + "║  4. ⚔️  Combat d'entraînement            ║" + RESET)
+		fmt.Println(VERT + "║  5. 🎵 Qui sont-ils ?                    ║" + RESET)
+		fmt.Println(BLANC + "║  0. 🚪 Quitter                           ║" + RESET)
+		fmt.Println(POURPRE + "╚══════════════════════════════════════════╝" + RESET)
 
 		var choix int
 		fmt.Print(POURPRE + "➤ Votre choix : " + RESET)
@@ -62,23 +65,23 @@ var listeObjets = []ObjetBoutique{
 func menuMarchand(p *Personnage) {
 	lecteur := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println(OR + "\nMARCHAND D'ELDORIA" + RESET)
-		fmt.Printf(OR+"💰 Votre bourse : %d pièces d'or\n"+RESET, p.Or)
-		fmt.Printf(CYAN_VIF+"🎒 Inventaire   : %d/%d\n"+RESET, len(p.Inventaire), p.InventaireMax)
-		fmt.Println(JAUNE_VIVE + "Que souhaitez-vous acquérir, voyageur ?" + RESET)
+		fmt.Println(JAUNE + "\nMARCHAND D'ELDORIA" + RESET)
+		fmt.Printf(JAUNE+"💰 Votre bourse : %d pièces d'or\n"+RESET, p.Or)
+		fmt.Printf(BLEU+"🎒 Inventaire   : %d/%d\n"+RESET, len(p.Inventaire), p.InventaireMax)
+		fmt.Println(JAUNE + "Que souhaitez-vous acquérir, voyageur ?" + RESET)
 		for i, obj := range listeObjets {
-			fmt.Printf(CYAN_VIF+"║  %d. %s %-28s"+OR+"%d 🪙\n"+RESET, i+1, obj.Emoji, obj.Nom, obj.Prix)
-			fmt.Printf(ARGENT+"║     → %s\n"+RESET, obj.Desc)
+			fmt.Printf(BLEU+"  %d. %s %-28s"+JAUNE+"%d 🪙\n"+RESET, i+1, obj.Emoji, obj.Nom, obj.Prix)
+			fmt.Printf(BLANC+"     → %s\n"+RESET, obj.Desc)
 		}
-		fmt.Println(ARGENT + "0. 🚪 Retour au menu principal" + RESET)
+		fmt.Println(BLANC + "0. 🚪 Retour au menu principal" + RESET)
 
 		var choix int
-		fmt.Print(EMERAUDE + "➤ Votre choix : " + RESET)
+		fmt.Print(VERT + "➤ Votre choix : " + RESET)
 		fmt.Scan(&choix)
 		lecteur.ReadString('\n')
 
 		if choix == 0 {
-			fmt.Println(OR + "👋 Que les dieux d'Eldoria vous protègent, voyageur !" + RESET)
+			fmt.Println(JAUNE + "👋 Que les dieux d'Eldoria vous protègent, voyageur !" + RESET)
 			return
 		}
 		if choix < 1 || choix > len(listeObjets) {
@@ -105,24 +108,24 @@ func menuMarchand(p *Personnage) {
 				}
 			}
 			if dejaConnu {
-				fmt.Println(JAUNE_VIVE + "📖 Vous maîtrisez déjà l'art de la Boule de Feu !" + RESET)
+				fmt.Println(JAUNE + "📖 Vous maîtrisez déjà l'art de la Boule de Feu !" + RESET)
 				continue
 			}
 		}
 
 		p.Or -= obj.Prix
 		p.Inventaire = append(p.Inventaire, obj.Nom)
-		fmt.Printf(VERT_VIF+"✅ Vous acquérez '%s' pour %d 🪙.\n"+RESET, obj.Nom, obj.Prix)
-		fmt.Printf(OR+"💰 Il vous reste %d pièces d'or.\n"+RESET, p.Or)
+		fmt.Printf(VERT+"✅ Vous acquérez '%s' pour %d 🪙.\n"+RESET, obj.Nom, obj.Prix)
+		fmt.Printf(JAUNE+"💰 Il vous reste %d pièces d'or.\n"+RESET, p.Or)
 	}
 }
 
 func quiSontIls() {
-	fmt.Println(MAGENTA + "\n🎵 QUI SONT-ILS ?" + RESET)
-	fmt.Println(CYAN_VIF + "Partie 2 : ABBA" + RESET)
-	fmt.Println(ARGENT + "- Money Money Money" + RESET)
-	fmt.Println(ARGENT + "- Gimme! Gimme! Gimme!" + RESET)
-	fmt.Println(ARGENT + "- On and On and On" + RESET)
-	fmt.Println(CYAN_VIF + "Partie 3 : Références cinéma" + RESET)
-	fmt.Println(ARGENT + "- Ready Player One, A.I., Duel" + RESET)
+	fmt.Println(ROUGE + "\n🎵 QUI SONT-ILS ?" + RESET)
+	fmt.Println(BLEU + "Partie 2 : ABBA" + RESET)
+	fmt.Println(BLANC + "- Money Money Money" + RESET)
+	fmt.Println(BLANC + "- Gimme! Gimme! Gimme!" + RESET)
+	fmt.Println(BLANC + "- On and On and On" + RESET)
+	fmt.Println(BLEU + "Partie 3 : Références cinéma" + RESET)
+	fmt.Println(BLANC + "- Ready Player One, A.I., Duel" + RESET)
 }
