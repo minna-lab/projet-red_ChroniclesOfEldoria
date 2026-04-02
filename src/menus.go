@@ -6,27 +6,22 @@ import (
 	"os"
 )
 
-// menuPrincipal affiche le menu principal et gère la navigation
 func menuPrincipal(p *Personnage) {
 	lecteur := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("\n╔══════════════════════════════════════════╗")
-		fmt.Println("║    🏰 CHRONICLES OF ELDORIA 🏰           ║")
-		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Printf("║  Héros : %-10s | HP : %d/%d\n", p.Nom, p.HPActuel, p.HPMax)
-		fmt.Printf("║  Or    : %d 🪙\n", p.Or)
-		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Println("║  1. Afficher les informations            ║")
-		fmt.Println("║  2. Accéder à l'inventaire               ║")
-		fmt.Println("║  3. Marchand                             ║")
-		fmt.Println("║  4. Forgeron                             ║")
-		fmt.Println("║  5. Combat d'entraînement                ║")
-		fmt.Println("║  6. Qui sont-ils ?                       ║")
-		fmt.Println("║  0. Quitter                              ║")
-		fmt.Println("╚══════════════════════════════════════════╝")
+		fmt.Println(POURPRE + "\nCHRONICLES OF ELDORIA")
+		fmt.Printf(OR+"Héros : %s | HP : %d/%d\n"+RESET, p.Nom, p.HPActuel, p.HPMax)
+		fmt.Printf(OR+"Or : %d pièces\n"+RESET, p.Or)
+		fmt.Println(POURPRE + "---" + RESET)
+		fmt.Println(OR + "1. 📜 Afficher les informations" + RESET)
+		fmt.Println(VERT + "2. 🎒 Accéder à l'inventaire" + RESET)
+		fmt.Println(BLANC + "3. 🛒 Marchand d'Eldoria" + RESET)
+		fmt.Println(OR + "4. ⚔️  Combat d'entraînement" + RESET)
+		fmt.Println(VERT + "5. 🎵 Qui sont-ils ?" + RESET)
+		fmt.Println(BLANC + "0. 🚪 Quitter" + RESET)
 
 		var choix int
-		fmt.Print("➤ Votre choix : ")
+		fmt.Print(POURPRE + "➤ Votre choix : " + RESET)
 		fmt.Scan(&choix)
 		lecteur.ReadString('\n')
 
@@ -38,195 +33,96 @@ func menuPrincipal(p *Personnage) {
 		case 3:
 			menuMarchand(p)
 		case 4:
-			menuForgeron(p)
-		case 5:
 			combatEntrainement(p)
-		case 6:
+		case 5:
 			quiSontIls()
 		case 0:
-			fmt.Println("\n⚔️  Les Chroniques d'Eldoria vous attendent. À bientôt !")
+			fmt.Println(POURPRE + "\n⚔️  Les Chroniques d'Eldoria vous attendent, brave héros. À bientôt !" + RESET)
 			return
 		default:
-			fmt.Println("❌ Choix invalide.")
+			fmt.Println(ROUGE + "❌ Choix invalide, entrez un nombre entre 0 et 5." + RESET)
 		}
 	}
 }
 
-// ObjetBoutique représente un objet vendu par le marchand
 type ObjetBoutique struct {
 	Nom   string
 	Prix  int
 	Emoji string
+	Desc  string
 }
 
-// listeObjets contient tous les objets disponibles chez le marchand
 var listeObjets = []ObjetBoutique{
-	{"Potion de Vie", 3, "🧪"},
-	{"Potion de Poison", 6, "☠️"},
-	{"Livre de Sort : Boule de Feu", 25, "📖"},
-	{"Fourrure de Loup", 4, "🐺"},
-	{"Peau de Troll", 7, "👹"},
-	{"Cuir de Sanglier", 3, "🐗"},
-	{"Plume de Corbeau", 1, "🪶"},
-	{"Augmentation d'Inventaire", 30, "🎒"},
+	{"Potion de Vie", 3, "🧪", "Restaure 50 points de vie"},
+	{"Potion de Poison", 6, "☠️", "Inflige 10 dégâts/sec pendant 3s"},
+	{"Livre de Sort : Boule de Feu", 25, "📖", "Apprend le sort légendaire Boule de Feu"},
+	{"Augmentation d'Inventaire", 30, "🎒", "+10 places dans l'inventaire (max 3 fois)"},
 }
 
-// menuMarchand affiche le menu du marchand et gère les achats
 func menuMarchand(p *Personnage) {
 	lecteur := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("\n╔══════════════════════════════════════════╗")
-		fmt.Println("║   🛒 MARCHAND D'ELDORIA                  ║")
-		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Printf("║  Votre bourse : %d 🪙\n", p.Or)
-		fmt.Println("╠══════════════════════════════════════════╣")
+		fmt.Println(OR + "\nMARCHAND D'ELDORIA" + RESET)
+		fmt.Printf(OR+"💰 Votre bourse : %d pièces d'or\n"+RESET, p.Or)
+		fmt.Printf(CYAN_VIF+"🎒 Inventaire   : %d/%d\n"+RESET, len(p.Inventaire), p.InventaireMax)
+		fmt.Println(JAUNE_VIVE + "Que souhaitez-vous acquérir, voyageur ?" + RESET)
 		for i, obj := range listeObjets {
-			fmt.Printf("║  %d. %s %-25s %d 🪙\n", i+1, obj.Emoji, obj.Nom, obj.Prix)
+			fmt.Printf(CYAN_VIF+"║  %d. %s %-28s"+OR+"%d 🪙\n"+RESET, i+1, obj.Emoji, obj.Nom, obj.Prix)
+			fmt.Printf(ARGENT+"║     → %s\n"+RESET, obj.Desc)
 		}
-		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Println("║  0. Retour                               ║")
-		fmt.Println("╚══════════════════════════════════════════╝")
+		fmt.Println(ARGENT + "0. 🚪 Retour au menu principal" + RESET)
 
 		var choix int
-		fmt.Print("➤ Votre choix : ")
+		fmt.Print(EMERAUDE + "➤ Votre choix : " + RESET)
 		fmt.Scan(&choix)
 		lecteur.ReadString('\n')
 
 		if choix == 0 {
+			fmt.Println(OR + "👋 Que les dieux d'Eldoria vous protègent, voyageur !" + RESET)
 			return
 		}
 		if choix < 1 || choix > len(listeObjets) {
-			fmt.Println("❌ Choix invalide.")
+			fmt.Printf(ROUGE+"❌ Choix invalide, entrez un nombre entre 0 et %d.\n"+RESET, len(listeObjets))
 			continue
 		}
 
 		obj := listeObjets[choix-1]
+
 		if p.Or < obj.Prix {
-			fmt.Printf("💸 Pas assez d'or ! Il vous faut %d 🪙 (vous avez %d 🪙).\n", obj.Prix, p.Or)
+			fmt.Printf(ROUGE+"💸 Pas assez d'or ! Il vous faut %d 🪙 mais vous n'avez que %d 🪙.\n"+RESET, obj.Prix, p.Or)
 			continue
 		}
 		if inventairePlein(p) {
-			fmt.Println("🎒 Inventaire plein ! Faites de la place avant d'acheter.")
+			fmt.Printf(ROUGE+"🎒 Votre sac est plein (%d/%d) ! Allégez-le avant d'acheter.\n"+RESET, len(p.Inventaire), p.InventaireMax)
 			continue
 		}
-		p.Or -= obj.Prix
-		p.Inventaire = append(p.Inventaire, obj.Nom)
-		fmt.Printf("✅ Vous achetez '%s' pour %d 🪙. Il vous reste %d 🪙.\n", obj.Nom, obj.Prix, p.Or)
-	}
-}
-
-// Recette représente une recette de fabrication du forgeron
-type Recette struct {
-	Nom       string
-	CoutOr    int
-	Materiaux map[string]int
-	Emoji     string
-}
-
-// listeRecettes contient toutes les recettes disponibles
-var listeRecettes = []Recette{
-	{
-		Nom:    "Chapeau de l'Aventurier",
-		CoutOr: 5,
-		Materiaux: map[string]int{
-			"Plume de Corbeau": 1,
-			"Cuir de Sanglier": 1,
-		},
-		Emoji: "🪖",
-	},
-	{
-		Nom:    "Tunique de l'Aventurier",
-		CoutOr: 5,
-		Materiaux: map[string]int{
-			"Fourrure de Loup": 2,
-			"Peau de Troll":    1,
-		},
-		Emoji: "🧥",
-	},
-	{
-		Nom:    "Bottes de l'Aventurier",
-		CoutOr: 5,
-		Materiaux: map[string]int{
-			"Fourrure de Loup": 1,
-			"Cuir de Sanglier": 1,
-		},
-		Emoji: "👢",
-	},
-}
-
-// menuForgeron affiche le menu du forgeron
-func menuForgeron(p *Personnage) {
-	lecteur := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Println("\n╔══════════════════════════════════════════╗")
-		fmt.Println("║   🔨 FORGERON D'ELDORIA                  ║")
-		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Printf("║  Votre bourse : %d 🪙\n", p.Or)
-		fmt.Println("╠══════════════════════════════════════════╣")
-		for i, r := range listeRecettes {
-			fmt.Printf("║  %d. %s %s (coût : %d 🪙)\n", i+1, r.Emoji, r.Nom, r.CoutOr)
-			for mat, qte := range r.Materiaux {
-				possede := compterItem(p, mat)
-				fmt.Printf("║     - %dx %s (vous avez : %d)\n", qte, mat, possede)
+		if obj.Nom == "Livre de Sort : Boule de Feu" {
+			dejaConnu := false
+			for _, s := range p.Sorts {
+				if s == "Boule de Feu" {
+					dejaConnu = true
+					break
+				}
+			}
+			if dejaConnu {
+				fmt.Println(JAUNE_VIVE + "📖 Vous maîtrisez déjà l'art de la Boule de Feu !" + RESET)
+				continue
 			}
 		}
-		fmt.Println("╠══════════════════════════════════════════╣")
-		fmt.Println("║  0. Retour                               ║")
-		fmt.Println("╚══════════════════════════════════════════╝")
 
-		var choix int
-		fmt.Print("➤ Votre choix : ")
-		fmt.Scan(&choix)
-		lecteur.ReadString('\n')
-
-		if choix == 0 {
-			return
-		}
-		if choix < 1 || choix > len(listeRecettes) {
-			fmt.Println("❌ Choix invalide.")
-			continue
-		}
-		fabriquer(p, listeRecettes[choix-1])
+		p.Or -= obj.Prix
+		p.Inventaire = append(p.Inventaire, obj.Nom)
+		fmt.Printf(VERT_VIF+"✅ Vous acquérez '%s' pour %d 🪙.\n"+RESET, obj.Nom, obj.Prix)
+		fmt.Printf(OR+"💰 Il vous reste %d pièces d'or.\n"+RESET, p.Or)
 	}
 }
 
-// fabriquer tente de fabriquer un équipement
-func fabriquer(p *Personnage, r Recette) {
-	if p.Or < r.CoutOr {
-		fmt.Printf("💸 Pas assez d'or ! Il vous faut %d 🪙.\n", r.CoutOr)
-		return
-	}
-	for mat, qte := range r.Materiaux {
-		if compterItem(p, mat) < qte {
-			fmt.Printf("❌ Matériaux insuffisants : il vous faut %dx %s.\n", qte, mat)
-			return
-		}
-	}
-	if inventairePlein(p) {
-		fmt.Println("🎒 Inventaire plein ! Impossible de fabriquer cet objet.")
-		return
-	}
-	for mat, qte := range r.Materiaux {
-		for i := 0; i < qte; i++ {
-			retirerItemUneFois(p, mat)
-		}
-	}
-	p.Or -= r.CoutOr
-	p.Inventaire = append(p.Inventaire, r.Nom)
-	fmt.Printf("⚒️  Vous fabriquez '%s' ! (-%d 🪙)\n", r.Nom, r.CoutOr)
-}
-
-// quiSontIls révèle les artistes cachés dans les noms des tâches
 func quiSontIls() {
-	fmt.Println("\n╔══════════════════════════════════════════╗")
-	fmt.Println("║   🎵 QUI SONT-ILS ?                      ║")
-	fmt.Println("╠══════════════════════════════════════════╣")
-	fmt.Println("║  Partie 2 : ABBA                         ║")
-	fmt.Println("║  (Money Money Money,                     ║")
-	fmt.Println("║   Gimme! Gimme! Gimme!,                  ║")
-	fmt.Println("║   On and On and On)                      ║")
-	fmt.Println("╠══════════════════════════════════════════╣")
-	fmt.Println("║  Partie 3 : Références cinéma            ║")
-	fmt.Println("║  (Ready Player One, A.I., Duel)          ║")
-	fmt.Println("╚══════════════════════════════════════════╝")
+	fmt.Println(MAGENTA + "\n🎵 QUI SONT-ILS ?" + RESET)
+	fmt.Println(CYAN_VIF + "Partie 2 : ABBA" + RESET)
+	fmt.Println(ARGENT + "- Money Money Money" + RESET)
+	fmt.Println(ARGENT + "- Gimme! Gimme! Gimme!" + RESET)
+	fmt.Println(ARGENT + "- On and On and On" + RESET)
+	fmt.Println(CYAN_VIF + "Partie 3 : Références cinéma" + RESET)
+	fmt.Println(ARGENT + "- Ready Player One, A.I., Duel" + RESET)
 }

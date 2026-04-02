@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-// initialiserPersonnage crée un personnage avec les valeurs données
+// initialiserPersonnage crée un personnage avec les valeurs fournies
 func initialiserPersonnage(nom, classe string, niveau, hpMax, hpActuel int, inventaire []string) Personnage {
 	return Personnage{
 		Nom:               nom,
@@ -50,65 +50,63 @@ func estAlpha(s string) bool {
 	return true
 }
 
-// creationPersonnage permet au joueur de créer son héros
+// creationPersonnage guide le joueur pour créer son héros
 func creationPersonnage() Personnage {
 	lecteur := bufio.NewReader(os.Stdin)
 
-	fmt.Println("\n╔══════════════════════════════════════╗")
-	fmt.Println("║   ✨ CRÉATION DE VOTRE HÉROS ✨       ║")
-	fmt.Println("╚══════════════════════════════════════╝")
+	fmt.Println(POURPRE + "\nFORGER VOTRE DESTINÉE" + RESET)
+	fmt.Println(POURPRE + "\nLa Prophétie vous appelle. Qui êtes-vous ?" + RESET)
 
-	// Choix du nom
+	// Saisie du nom
 	var nom string
 	for {
-		fmt.Print("\n🖊  Entrez votre nom (lettres uniquement) : ")
+		fmt.Print(EMERAUDE + "\n  Votre nom (lettres uniquement) : " + RESET)
 		saisie, _ := lecteur.ReadString('\n')
 		saisie = strings.TrimSpace(saisie)
 		if len(saisie) == 0 {
-			fmt.Println("❌ Le nom ne peut pas être vide.")
+			fmt.Println(ROUGE + "  ✗ Le nom ne peut pas être vide." + RESET)
 			continue
 		}
 		if !estAlpha(saisie) {
-			fmt.Println("❌ Le nom ne doit contenir que des lettres.")
+			fmt.Println(ROUGE + "  ✗ Lettres uniquement, sans espaces ni chiffres." + RESET)
 			continue
 		}
 		nom = formaterNom(saisie)
 		break
 	}
 
-	// Choix de la classe
-	fmt.Println("\n⚔️  Choisissez votre classe :")
-	fmt.Println("  1. Humain  (100 HP)")
-	fmt.Println("  2. Elfe    (80 HP)")
-	fmt.Println("  3. Nain    (120 HP)")
+	// Choix de la race
+	fmt.Println(OR + "\n  Choisissez votre lignée :" + RESET)
+	fmt.Println(CYAN + "  1. Humain  (100 HP) — Né de la terre, forgé par la volonté" + RESET)
+	fmt.Println(EMERAUDE + "  2. Elfe    ( 80 HP) — Fils des forêts, maître des arcanes" + RESET)
+	fmt.Println(ARGENT + "  3. Nain    (120 HP) — Enfant des montagnes, résistance de pierre" + RESET)
 
 	var choixClasse int
 	var classe string
 	var hpMax int
 	for {
-		fmt.Print("\n➤ Votre choix : ")
+		fmt.Print(EMERAUDE + "\n  Votre choix : " + RESET)
 		fmt.Scan(&choixClasse)
 		lecteur.ReadString('\n')
 		switch choixClasse {
 		case 1:
-			classe = "Humain"
-			hpMax = 100
+			classe, hpMax = "Humain", 100
 		case 2:
-			classe = "Elfe"
-			hpMax = 80
+			classe, hpMax = "Elfe", 80
 		case 3:
-			classe = "Nain"
-			hpMax = 120
+			classe, hpMax = "Nain", 120
 		default:
-			fmt.Println("❌ Choix invalide, entrez 1, 2 ou 3.")
+			fmt.Println(ROUGE + "  ✗ Entrez 1, 2 ou 3." + RESET)
 			continue
 		}
 		break
 	}
 
-	hpDepart := hpMax / 2
-	joueur := initialiserPersonnage(nom, classe, 1, hpMax, hpDepart, []string{"Potion de Vie", "Potion de Vie", "Potion de Vie"})
+	joueur := initialiserPersonnage(nom, classe, 1, hpMax, hpMax/2, []string{"Potion de Vie", "Potion de Vie", "Potion de Vie"})
 
-	fmt.Printf("\n✅ Bienvenue dans les Chroniques d'Eldoria, %s le %s !\n", joueur.Nom, joueur.Classe)
+	fmt.Println()
+	fmt.Println(POURPRE + "  ════════════════════════════════════════" + RESET)
+	fmt.Printf(OR+GRAS+"  ✦ %s le %s, Eldoria a besoin de vous. ✦\n"+RESET, joueur.Nom, joueur.Classe)
+	fmt.Println(POURPRE + "  ════════════════════════════════════════" + RESET)
 	return joueur
 }

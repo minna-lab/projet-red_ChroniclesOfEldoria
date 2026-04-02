@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-// initialiserGobelin crée un gobelin d'entraînement
 func initialiserGobelin() Monstre {
 	return Monstre{
 		Nom:        "Gobelin d'Entraînement",
@@ -17,122 +16,116 @@ func initialiserGobelin() Monstre {
 	}
 }
 
-// patternGobelin gère l'attaque du gobelin selon le tour
 func patternGobelin(gobelin *Monstre, joueur *Personnage, tour int) {
 	degats := gobelin.Attaque
 	if tour%3 == 0 {
 		degats = gobelin.Attaque * 2
-		fmt.Printf("💥 %s prépare une attaque puissante !\n", gobelin.Nom)
+		fmt.Printf(ROUGE+GRAS+"💥 %s rugit et prépare une attaque dévastatrice !\n"+RESET, gobelin.Nom)
 	}
 	joueur.HPActuel -= degats
 	if joueur.HPActuel < 0 {
 		joueur.HPActuel = 0
 	}
-	fmt.Printf("⚔️  %s inflige %d dégâts à %s\n", gobelin.Nom, degats, joueur.Nom)
-	fmt.Printf("❤️  %s HP : %d/%d\n", joueur.Nom, joueur.HPActuel, joueur.HPMax)
+	fmt.Printf(ROUGE+"⚔️  %s inflige %d dégâts à %s\n"+RESET, gobelin.Nom, degats, joueur.Nom)
+	fmt.Printf(ROUGE_VIF+"❤️  %s HP : %d/%d\n"+RESET, joueur.Nom, joueur.HPActuel, joueur.HPMax)
 }
 
-// tourJoueur gère le tour du joueur en combat
-func tourJoueur(joueur *Personnage, gobelin *Monstre) {
+func tourJoueur(joueur *Personnage, gobelin *Monstre) bool {
 	lecteur := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("\n┌─────────────────────────────────────┐")
-		fmt.Println("│  ⚔️  VOTRE TOUR                      │")
-		fmt.Println("├─────────────────────────────────────┤")
-		fmt.Println("│  1. Attaquer (Attaque basique)      │")
-		fmt.Println("│  2. Lancer un sort                  │")
-		fmt.Println("│  3. Utiliser l'inventaire           │")
-		fmt.Println("└─────────────────────────────────────┘")
+		fmt.Println(VERT_VIF + "\n┌─────────────────────────────────────┐")
+		fmt.Println("│  ⚔️  VOTRE TOUR, BRAVE HÉROS !       │")
+		fmt.Println("├─────────────────────────────────────┤" + RESET)
+		fmt.Println(CYAN_VIF + "│  1. 🗡️  Attaque basique (5 dégâts)  │" + RESET)
+		fmt.Println(EMERAUDE + "│  2. ✨ Lancer un sort               │" + RESET)
+		fmt.Println(OR + "│  3. 🎒 Utiliser l'inventaire        │" + RESET)
+		fmt.Println(ARGENT + "│  0. 🏃 Fuir (retour au menu)        │" + RESET)
+		fmt.Println(VERT_VIF + "└─────────────────────────────────────┘" + RESET)
 
 		var choix int
-		fmt.Print("➤ Votre choix : ")
+		fmt.Print(EMERAUDE + "➤ Votre choix : " + RESET)
 		fmt.Scan(&choix)
 		lecteur.ReadString('\n')
 
 		switch choix {
 		case 1:
-			// Attaque basique : 5 dégâts
 			degats := 5
 			gobelin.HPActuel -= degats
 			if gobelin.HPActuel < 0 {
 				gobelin.HPActuel = 0
 			}
-			fmt.Printf("🗡️  Attaque Basique : %s inflige %d dégâts à %s\n", joueur.Nom, degats, gobelin.Nom)
-			fmt.Printf("👹 %s HP : %d/%d\n", gobelin.Nom, gobelin.HPActuel, gobelin.HPMax)
-			return
-
+			fmt.Printf(VERT_VIF+"🗡️  %s frappe avec force : %d dégâts à %s !\n"+RESET, joueur.Nom, degats, gobelin.Nom)
+			fmt.Printf(JAUNE_VIVE+"👹 %s HP : %d/%d\n"+RESET, gobelin.Nom, gobelin.HPActuel, gobelin.HPMax)
+			return false
 		case 2:
 			if lancerSort(joueur, gobelin) {
-				return
+				return false
 			}
-
 		case 3:
 			if len(joueur.Inventaire) == 0 {
-				fmt.Println("🎒 Inventaire vide !")
+				fmt.Println(ROUGE + "🎒 Votre sac est vide, héros !" + RESET)
 				continue
 			}
-			fmt.Println("\n🎒 Inventaire :")
+			fmt.Println(OR + "\n🎒 Votre inventaire :" + RESET)
 			for i, item := range joueur.Inventaire {
-				fmt.Printf("  %d. %s\n", i+1, item)
+				fmt.Printf(CYAN_VIF+"  %d. %s\n"+RESET, i+1, item)
 			}
-			fmt.Println("  0. Annuler")
+			fmt.Println(ARGENT + "  0. Annuler" + RESET)
 			var choixItem int
-			fmt.Print("➤ Votre choix : ")
+			fmt.Print(EMERAUDE + "➤ Votre choix : " + RESET)
 			fmt.Scan(&choixItem)
 			lecteur.ReadString('\n')
 			if choixItem == 0 {
 				continue
 			}
 			if choixItem < 1 || choixItem > len(joueur.Inventaire) {
-				fmt.Println("❌ Choix invalide.")
+				fmt.Println(ROUGE + "❌ Choix invalide." + RESET)
 				continue
 			}
 			item := joueur.Inventaire[choixItem-1]
 			utiliserItemCombat(joueur, item, choixItem-1)
-			return
-
+			return false
+		case 0:
+			fmt.Println(JAUNE_VIVE + "🏃 Vous battez en retraite... La prudence est mère de sûreté !" + RESET)
+			return true
 		default:
-			fmt.Println("❌ Choix invalide.")
+			fmt.Println(ROUGE + "❌ Choix invalide." + RESET)
 		}
 	}
 }
 
-// utiliserItemCombat utilise un item pendant le combat
 func utiliserItemCombat(p *Personnage, item string, index int) {
 	switch item {
 	case "Potion de Vie":
-		fmt.Printf("🧪 %s utilise une Potion de Vie !\n", p.Nom)
+		fmt.Printf(VERT_VIF+"🧪 %s boit une Potion de Vie en plein combat !\n"+RESET, p.Nom)
 		utiliserPotionVie(p, index)
 	default:
-		fmt.Printf("❌ '%s' ne peut pas être utilisé en combat.\n", item)
+		fmt.Printf(ROUGE+"❌ '%s' ne peut pas être utilisé en combat.\n"+RESET, item)
 	}
 }
 
-// degatsSort contient les dégâts de chaque sort
 var degatsSort = map[string]int{
 	"Coup de Poing": 8,
 	"Boule de Feu":  18,
 }
 
-// coutManaSort contient le coût en mana de chaque sort
 var coutManaSort = map[string]int{
 	"Coup de Poing": 5,
 	"Boule de Feu":  15,
 }
 
-// lancerSort gère l'utilisation d'un sort en combat
 func lancerSort(joueur *Personnage, gobelin *Monstre) bool {
 	lecteur := bufio.NewReader(os.Stdin)
-	fmt.Printf("\n✨ Sorts disponibles (Mana : %d/%d) :\n", joueur.ManaActuel, joueur.ManaMax)
+	fmt.Printf(EMERAUDE+"\n✨ Sorts disponibles (Mana : %d/%d) :\n"+RESET, joueur.ManaActuel, joueur.ManaMax)
 	for i, s := range joueur.Sorts {
 		cout := coutManaSort[s]
 		dgts := degatsSort[s]
-		fmt.Printf("  %d. %s (dégâts : %d | mana : %d)\n", i+1, s, dgts, cout)
+		fmt.Printf(CYAN_VIF+"  %d. %s (dégâts : %d | mana : %d)\n"+RESET, i+1, s, dgts, cout)
 	}
-	fmt.Println("  0. Annuler")
+	fmt.Println(ARGENT + "  0. Annuler" + RESET)
 
 	var choix int
-	fmt.Print("➤ Votre choix : ")
+	fmt.Print(EMERAUDE + "➤ Votre choix : " + RESET)
 	fmt.Scan(&choix)
 	lecteur.ReadString('\n')
 
@@ -140,7 +133,7 @@ func lancerSort(joueur *Personnage, gobelin *Monstre) bool {
 		return false
 	}
 	if choix < 1 || choix > len(joueur.Sorts) {
-		fmt.Println("❌ Choix invalide.")
+		fmt.Println(ROUGE + "❌ Choix invalide." + RESET)
 		return false
 	}
 
@@ -149,7 +142,7 @@ func lancerSort(joueur *Personnage, gobelin *Monstre) bool {
 	dgts := degatsSort[sort]
 
 	if joueur.ManaActuel < cout {
-		fmt.Printf("💧 Mana insuffisant ! Il vous faut %d mana (vous avez %d).\n", cout, joueur.ManaActuel)
+		fmt.Printf(BLEU_VIF+"💧 Mana insuffisant ! Il vous faut %d mana (vous avez %d).\n"+RESET, cout, joueur.ManaActuel)
 		return false
 	}
 
@@ -158,38 +151,36 @@ func lancerSort(joueur *Personnage, gobelin *Monstre) bool {
 	if gobelin.HPActuel < 0 {
 		gobelin.HPActuel = 0
 	}
-	fmt.Printf("✨ %s lance '%s' : %d dégâts à %s !\n", joueur.Nom, sort, dgts, gobelin.Nom)
-	fmt.Printf("👹 %s HP : %d/%d\n", gobelin.Nom, gobelin.HPActuel, gobelin.HPMax)
+	fmt.Printf(EMERAUDE+"✨ %s invoque '%s' : %d dégâts magiques à %s !\n"+RESET, joueur.Nom, sort, dgts, gobelin.Nom)
+	fmt.Printf(JAUNE_VIVE+"👹 %s HP : %d/%d\n"+RESET, gobelin.Nom, gobelin.HPActuel, gobelin.HPMax)
 	return true
 }
 
-// combatEntrainement lance un combat contre le gobelin
 func combatEntrainement(joueur *Personnage) {
 	gobelin := initialiserGobelin()
 	tour := 1
 
-	fmt.Println("\n╔══════════════════════════════════════════╗")
-	fmt.Println("║   ⚔️  COMBAT D'ENTRAÎNEMENT              ║")
-	fmt.Println("╠══════════════════════════════════════════╣")
-	fmt.Printf("║  %s VS %s\n", joueur.Nom, gobelin.Nom)
-	fmt.Println("╚══════════════════════════════════════════╝")
+	fmt.Println(ROUGE_VIF + "\nCOMBAT D'ENTRAÎNEMENT" + RESET)
+	fmt.Printf(JAUNE_VIVE+"%s VS %s\n"+RESET, joueur.Nom, gobelin.Nom)
 
-	// Initiative : celui qui a le plus commence
 	joueurCommence := joueur.Initiative >= gobelin.Initiative
 	if joueurCommence {
-		fmt.Printf("🎲 %s a plus d'initiative et commence !\n", joueur.Nom)
+		fmt.Printf(VERT_VIF+"🎲 %s a plus d'initiative et attaque en premier !\n"+RESET, joueur.Nom)
 	} else {
-		fmt.Printf("🎲 %s a plus d'initiative et commence !\n", gobelin.Nom)
+		fmt.Printf(ROUGE+"🎲 %s surgit des ombres et attaque en premier !\n"+RESET, gobelin.Nom)
 	}
 
 	for {
-		fmt.Printf("\n══════════ TOUR %d ══════════\n", tour)
-		fmt.Printf("❤️  %s : %d/%d | 👹 %s : %d/%d\n",
+		fmt.Printf(POURPRE+"\n--- TOUR %d ---\n"+RESET, tour)
+		fmt.Printf(VERT_VIF+"❤️  %s : %d/%d"+RESET+" | "+ROUGE+"👹 %s : %d/%d\n"+RESET,
 			joueur.Nom, joueur.HPActuel, joueur.HPMax,
 			gobelin.Nom, gobelin.HPActuel, gobelin.HPMax)
 
 		if joueurCommence {
-			tourJoueur(joueur, &gobelin)
+			aFui := tourJoueur(joueur, &gobelin)
+			if aFui {
+				return
+			}
 			if gobelin.HPActuel <= 0 {
 				victoire(joueur, &gobelin)
 				return
@@ -205,7 +196,10 @@ func combatEntrainement(joueur *Personnage) {
 				defaite(joueur)
 				return
 			}
-			tourJoueur(joueur, &gobelin)
+			aFui := tourJoueur(joueur, &gobelin)
+			if aFui {
+				return
+			}
 			if gobelin.HPActuel <= 0 {
 				victoire(joueur, &gobelin)
 				return
@@ -217,21 +211,20 @@ func combatEntrainement(joueur *Personnage) {
 	}
 }
 
-// victoire gère la fin de combat gagnée
 func victoire(joueur *Personnage, gobelin *Monstre) {
-	fmt.Printf("\n🏆 Victoire ! Vous avez vaincu %s !\n", gobelin.Nom)
+	fmt.Println(OR + GRAS + "\nVICTOIRE !" + RESET)
+	fmt.Printf(OR+"🏆 Vous avez vaincu %s !\n"+RESET, gobelin.Nom)
 	gagnerXP(joueur, 30)
 }
 
-// defaite gère la fin de combat perdue
 func defaite(joueur *Personnage) {
-	fmt.Println("\n💀 Vous avez été vaincu... Retour au camp de base.")
+	fmt.Println(ROUGE + GRAS + "\nDÉFAITE..." + RESET)
+	fmt.Println(ROUGE + "💀 Vous retournez au camp..." + RESET)
 	estMort(joueur)
 }
 
-// gagnerXP ajoute de l'expérience et gère la montée de niveau
 func gagnerXP(p *Personnage, xp int) {
-	fmt.Printf("⭐ Vous gagnez %d points d'expérience !\n", xp)
+	fmt.Printf(OR+"⭐ Vous gagnez %d points d'expérience !\n"+RESET, xp)
 	p.XPActuel += xp
 	for p.XPActuel >= p.XPMax {
 		exces := p.XPActuel - p.XPMax
@@ -242,7 +235,7 @@ func gagnerXP(p *Personnage, xp int) {
 		p.HPActuel = p.HPMax
 		p.ManaMax += 10
 		p.ManaActuel = p.ManaMax
-		fmt.Printf("🎉 NIVEAU %d ! HP max : %d | Mana max : %d\n", p.Niveau, p.HPMax, p.ManaMax)
+		fmt.Printf(OR+GRAS+"🎉 NIVEAU %d ! HP max : %d | Mana max : %d\n"+RESET, p.Niveau, p.HPMax, p.ManaMax)
 	}
-	fmt.Printf("📊 XP : %d/%d\n", p.XPActuel, p.XPMax)
+	fmt.Printf(JAUNE_VIVE+"📊 XP : %d/%d\n"+RESET, p.XPActuel, p.XPMax)
 }
